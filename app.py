@@ -10,6 +10,13 @@ import json
 from dotenv import load_dotenv
 from tools import request_bank_balance_iso_format, request_paytm_balance_enquiry, tools
 
+
+st.write(
+    "OPENAI_API_KEY has been set",
+    os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
+)
+
+
 load_dotenv()
 
 llm = ChatOpenAI(
