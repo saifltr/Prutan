@@ -7,17 +7,13 @@ from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputP
 from langchain.memory import ConversationBufferMemory
 import os
 import json
-from dotenv import load_dotenv
 from tools import request_bank_balance_iso_format, request_paytm_balance_enquiry, tools
 
+# Set page config at the very top
+st.set_page_config(page_title="Financial Request Generator", page_icon="💰")
 
-st.write(
-    "OPENAI_API_KEY has been set",
-    os.environ["OPENAI_API_KEY"] == st.secrets["OPENAI_API_KEY"],
-)
-
-
-load_dotenv()
+# Load OpenAI API key from Streamlit secrets
+openai_api_key = st.secrets["openai"]["api_key"]
 
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
@@ -25,6 +21,7 @@ llm = ChatOpenAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
+    openai_api_key=openai_api_key  # Pass the API key to the LLM
 )
 
 prompt = ChatPromptTemplate.from_messages([
@@ -45,14 +42,12 @@ prompt = ChatPromptTemplate.from_messages([
     
     Remember to always clarify the type of balance enquiry before proceeding.
     Always strictly remember the output you give must be either in JSON format or ISO format strictly based on the user query
-    If user mentions about generating request for Paytm Bank Balance Enquiry you must respond the reuqest in JSON format
+    If user mentions about generating request for Paytm Bank Balance Enquiry you must respond the request in JSON format
     If user mentions about generating request for Bank Balance enquiry you must respond in ISO 8583 format
     """),
     ("human", "{input}"),
     MessagesPlaceholder(variable_name="agent_scratchpad"),
 ])
-
-
 
 llm_with_tools = llm.bind_tools(tools)
 
@@ -79,8 +74,6 @@ def process_user_input(user_input: str):
     return response
 
 def main():
-    st.set_page_config(page_title="Financial Request Generator", page_icon="💰")
-    
     st.title("💰 Financial Request Generator")
     st.write("Welcome! This tool helps you generate structured financial requests. Just type your request, and I'll help you create the appropriate JSON or ISO 8583 format.")
 
@@ -116,4 +109,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
