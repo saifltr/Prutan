@@ -7,13 +7,13 @@ from langchain.agents.output_parsers.openai_tools import OpenAIToolsAgentOutputP
 from langchain.memory import ConversationBufferMemory
 import os
 import json
+from dotenv import load_dotenv
 from tools import request_bank_balance_iso_format, request_paytm_balance_enquiry, tools
 
 # Set page config at the very top
 st.set_page_config(page_title="Financial Request Generator", page_icon="💰")
 
-# Load OpenAI API key from Streamlit secrets
-openai_api_key = st.secrets["openai"]["api_key"]
+load_dotenv()  # Load environment variables from .env file
 
 llm = ChatOpenAI(
     model="gpt-3.5-turbo",
@@ -21,7 +21,6 @@ llm = ChatOpenAI(
     max_tokens=None,
     timeout=None,
     max_retries=2,
-    openai_api_key=openai_api_key  # Pass the API key to the LLM
 )
 
 prompt = ChatPromptTemplate.from_messages([
